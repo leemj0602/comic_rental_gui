@@ -1,6 +1,8 @@
 
+import java.io.*;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -211,12 +213,7 @@ public class RentalMenuGUI extends javax.swing.JFrame {
 
         tblLoans.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "ISBN-13", "Title", "Rental Per Day", "Deposit Fee"
@@ -299,11 +296,25 @@ public class RentalMenuGUI extends javax.swing.JFrame {
         txtMessage.setRows(5);
         jScrollPane3.setViewportView(txtMessage);
 
+        btnEarning.setBackground(new java.awt.Color(0, 0, 255));
         btnEarning.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnEarning.setForeground(new java.awt.Color(255, 255, 255));
         btnEarning.setText("Get Earning Stats");
+        btnEarning.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEarningActionPerformed(evt);
+            }
+        });
 
+        btnClear.setBackground(new java.awt.Color(0, 0, 255));
         btnClear.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnClear.setForeground(new java.awt.Color(255, 255, 255));
         btnClear.setText("Clear Message");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelSystemLayout = new javax.swing.GroupLayout(panelSystem);
         panelSystem.setLayout(panelSystemLayout);
@@ -336,8 +347,15 @@ public class RentalMenuGUI extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel10.setText("Search:");
 
+        btnSearch.setBackground(new java.awt.Color(0, 155, 0));
         btnSearch.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnSearch.setForeground(new java.awt.Color(255, 255, 255));
         btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(rbComic);
         rbComic.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -383,8 +401,15 @@ public class RentalMenuGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        btnSave.setBackground(new java.awt.Color(255, 0, 0));
         btnSave.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnSave.setForeground(new java.awt.Color(255, 255, 255));
         btnSave.setText("Save & Exit ");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         lblComicHeader.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblComicHeader.setText("Comic");
@@ -425,7 +450,7 @@ public class RentalMenuGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblComicHeader)
                     .addComponent(lblRenteeHeader))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(panelRentee, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -500,6 +525,36 @@ public class RentalMenuGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRenteePrevActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        String isbnSearch = txtSearch.getText().trim();
+        String memberSearch = txtSearch.getText().trim();
+
+        if (rbComic.isSelected()) {
+            searchComic(isbnSearch);
+        } else if (rbRentee.isSelected()) {
+            searchMember(memberSearch);
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnEarningActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEarningActionPerformed
+        // TODO add your handling code here:
+        earnings(rentees.size());
+    }//GEN-LAST:event_btnEarningActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        txtMessage.setText("");
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+        saveRentee();
+        JOptionPane.showMessageDialog(null, "Saving data..");
+        JOptionPane.showMessageDialog(null, "Thank you for using Comic Rental.\nWe look forward to serve you in the near future.");
+        System.exit(0);
+    }//GEN-LAST:event_btnSaveActionPerformed
+
     private void displayComic(int comicIndex) {
         String information;
         lblComicHeader.setText("Comic " + (comicIndex + 1) + " of " + comics.size());
@@ -511,27 +566,101 @@ public class RentalMenuGUI extends javax.swing.JFrame {
         txtDeposit.setText("$" + String.format("%.2f", comic.getDeposit()));
 
         if (comic.getType().equals("Manga")) {
-            information = manga.mangaInformation();
+            information = manga.information();
         } else {
             information = comic.information();
         }
-        
+
         txtInfo.setText(information);
     }
 
     public void displayRentee(int renteeIndex) {
         lblRenteeHeader.setText("Rentee " + (renteeIndex + 1) + " of " + rentees.size());
         Rentee rentee = (Rentee) rentees.get(renteeIndex);
-        for (int i = 0; i < comics.size(); i++) { //loop through comic object array
-            Comic comic = (Comic) comics.get(i);
-            for (int j = 0; j < rentee.getComicsISBN().length; j++) { //loop through rentee object comicISBN array
-                if (comic.getIsbn13().equals(rentee.getComicsISBN()[j])) {
+        DefaultTableModel model = (DefaultTableModel) tblLoans.getModel();
+        for (int i = model.getRowCount() - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+        for (int j = 0; j < comics.size(); j++) { //loop through comic object array
+            Comic comic = (Comic) comics.get(j);
+            for (int k = 0; k < rentee.getComicsISBN().length; k++) { //loop through rentee object comicISBN array  
+                if (comic.getIsbn13().equals(rentee.getComicsISBN()[k])) {
                     txtID.setText(rentee.getMemberID());
                     txtName.setText(rentee.getName());
+                    String rowData[] = {
+                        rentee.getComicsISBN()[k],
+                        comic.getTitle(),
+                        "$" + String.format("%.2f", comic.getPricePerDay()),
+                        "$" + String.format("%.2f", comic.getDeposit())
+                    };
+                    model.addRow(rowData);
                 }
             }
         }
+    }
 
+    public void searchComic(String isbn13) {
+        String msg = "No such ISBN-13 \"" + isbn13 + "\" in the data!";
+        for (int i = 0; i < comics.size(); i++) { //compare isbn13 input to isbn13 in comic object array
+            Comic comic = (Comic) comics.get(i);
+            if (isbn13.equals(comic.getIsbn13())) {
+                msg = "Found and displayed item with the ISBN-13: " + isbn13;
+                displayComic(i);
+            }
+        }
+        txtMessage.setText(msg);
+    }
+
+    public void searchMember(String memberID) {
+        String msg = "No such Member ID \"" + memberID + "\" in the data!";
+        for (int i = 0; i < rentees.size(); i++) { //compare memberID input to memberID in rentee object array
+            Rentee rentee = (Rentee) rentees.get(i);
+            if (memberID.toLowerCase().equals(rentee.getMemberID().toLowerCase())) {
+                msg = "Found and displayed rentee with the Member ID: " + rentee.getMemberID();
+                displayRentee(i);
+            }
+        }
+        txtMessage.setText(msg);
+    }
+
+    public double calculateRentalPerDay(int index) {
+        Rentee rentee = (Rentee) rentees.get(index);
+        double rentalPerDay = 0;
+        for (int i = 0; i < comics.size(); i++) { //loop through comic object array
+            Comic comic = (Comic) comics.get(i);
+            for (int j = 0; j < rentee.getComicsISBN().length; j++) { //loop through rentee object comic array
+                if (comic.getIsbn13().equals(rentee.getComicsISBN()[j])) {
+                    rentalPerDay += comic.getPricePerDay();
+                }
+            }
+        }
+        return rentalPerDay;
+    }
+
+    public void earnings(int renteeArrLength) {
+        String stats;
+        double earningPerDay = 0;
+        stats = "Earning Per Day:";
+        stats += "\n----------------------\n\n";
+        stats += "There are " + renteeArrLength + " Rentees in total.\n\n";
+        for (int i = 0; i < renteeArrLength; i++) { //loop through the rentee object array
+            earningPerDay += calculateRentalPerDay(i);
+        }
+        stats += "Average earning per day based on number of rentees is $" + String.format("%.2f", earningPerDay / renteeArrLength) + ".\n\n";
+        stats += "Total earning per day is $" + String.format("%.2f", earningPerDay);
+        txtMessage.setText(stats);
+    }
+
+    public void saveRentee() {
+        File renteesData = new File("rentees.dat");
+
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(renteesData));
+            os.writeObject(rentees);
+            os.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

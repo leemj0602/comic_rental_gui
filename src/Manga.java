@@ -24,7 +24,7 @@ public class Manga extends Comic {
         this.translated = translated;
     }
 
-    public String mangaInformation() {
+    public String information() {
         String information = super.information();
         if (this.translated == true) {
             information += " translated to English";
